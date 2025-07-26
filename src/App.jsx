@@ -7,33 +7,31 @@ import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import { Toaster } from "react-hot-toast";
+import OrderSuccess from "./pages/order-success";
 
 function App() {
   const [loginOpen, setLoginOpen] = useState(false);
 
   return (
-   <BrowserRouter>
-  <div className=" bg-gray-50">
-      <Toaster position="top-right" />
-    <Header onLoginClick={() => setLoginOpen(true)} />
+    <BrowserRouter>
+      <div className=" bg-gray-50">
+        <Toaster position="top-right" />
+        <Header onLoginClick={() => setLoginOpen(true)} />
 
-    <LoginModal
-      isOpen={loginOpen}
-      onClose={() => setLoginOpen(false)}
-    />
+        <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
 
-    <Routes>
-      <Route path="/" element={<ProductListPage />} />
-      <Route
-        path="/cart"
-        element={<CartPage onLoginTrigger={() => setLoginOpen(true)} />}
-      />
-      <Route path="/wishlist" element={<WishlistPage/>} />
-  <Route path="/product/:id" element={<ProductDetailsPage />} />
-    </Routes>
-  </div>
-</BrowserRouter>
-
+        <Routes>
+          <Route path="/" element={<ProductListPage />} />
+          <Route
+            path="/cart"
+            element={<CartPage onLoginTrigger={() => setLoginOpen(true)} />}
+          />
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/product/:id" element={<ProductDetailsPage />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 
