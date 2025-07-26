@@ -10,9 +10,9 @@ export const syncCartToBackend = createAsyncThunk(
     const token = state.auth.token || localStorage.getItem("token");
     const rawItems = state.cart.items;
 
-    // 🧹 Clean the cart to remove complex objects or dummy product structures
+    //  Clean the cart to remove complex objects or dummy product structures
     const cleanedItems = rawItems.map((item) => ({
-      productId: item.productId.id  ,
+      productId: item.productId.id,
       quantity: item.quantity,
     }));
 
@@ -35,28 +35,24 @@ const cartSlice = createSlice({
     items: saved,
   },
   reducers: {
-   addToCart: (state, action) => {
-  const { productId, quantity } = action.payload;
-  const existing = state.items.find(
-    (i) =>
-      i.productId.id === productId.id || // when productId is an object
-      i.productId === productId           // when productId is just an ID (number/string)
-  );
+    addToCart: (state, action) => {
+      const { productId, quantity } = action.payload;
+      const existing = state.items.find(
+        (i) => i.productId.id === productId.id || i.productId === productId
+      );
 
-  if (existing) {
-    existing.quantity += quantity;
-  } else {
-    state.items.push({ productId, quantity });
-  }
+      if (existing) {
+        existing.quantity += quantity;
+      } else {
+        state.items.push({ productId, quantity });
+      }
 
-  localStorage.setItem("cartItems", JSON.stringify(state.items));
-},
+      localStorage.setItem("cartItems", JSON.stringify(state.items));
+    },
 
     removeFromCart: (state, action) => {
       state.items = state.items.filter(
-        (i) =>
-  (i.productId.id || i.productId) !== action.payload
-
+        (i) => (i.productId.id || i.productId) !== action.payload
       );
       localStorage.setItem("cartItems", JSON.stringify(state.items));
     },
@@ -66,9 +62,7 @@ const cartSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(syncCartToBackend.fulfilled, (state) => {
-     
-    });
+    builder.addCase(syncCartToBackend.fulfilled, (state) => {});
   },
 });
 

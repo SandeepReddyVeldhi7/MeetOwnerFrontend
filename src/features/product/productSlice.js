@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 import api from '../../services/api';
 
 export const fetchAllProducts = createAsyncThunk(
@@ -7,7 +6,7 @@ export const fetchAllProducts = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await api.get('/products');
-    console.log("res",res?.data)
+    // console.log("res",res?.data)
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue('Failed to load products');

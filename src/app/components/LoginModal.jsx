@@ -26,23 +26,26 @@ export default function LoginModal({ isOpen, onClose }) {
 
       //  Sync localStorage cart to DB if present
       const localCart = JSON.parse(localStorage.getItem("cartItems")) || [];
-     if (localCart.length > 0) {
-  try {
-   const cleanedCart = localCart.map(item => ({
-  productId: item.productId,
-  quantity: item.quantity
-}));
+      if (localCart.length > 0) {
+        try {
+          const cleanedCart = localCart.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          }));
 
-await api.post('/cart/add', { items: cleanedCart }, {
-  headers: { Authorization: `Bearer ${token}` }
-});
-    localStorage.removeItem('cartItems'); //  this line clears guest cart
-  } catch (syncErr) {
-    console.error("Cart sync failed", syncErr);
-    toast.error("Failed to sync cart to account");
-  }
-}
-
+          await api.post(
+            "/cart/add",
+            { items: cleanedCart },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          localStorage.removeItem("cartItems"); //  this line clears guest cart
+        } catch (syncErr) {
+          console.error("Cart sync failed", syncErr);
+          toast.error("Failed to sync cart to account");
+        }
+      }
 
       toast.success("Login successful!", { id: toastId });
       onClose();
