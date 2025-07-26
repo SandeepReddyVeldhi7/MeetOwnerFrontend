@@ -92,7 +92,7 @@ export default function ProductDetailsPage() {
             ₹{product.price}
           </p>
           <p style={{ color: '#4b5563', fontSize: '0.95rem' }}>
-            {product.description || 'No description available.'}
+            {product.description || 'No description available..'}
           </p>
 
           {/* Wishlist */}
