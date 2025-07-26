@@ -46,7 +46,7 @@ export default function CartPage({ onLoginTrigger }) {
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    console.log("✅ Razorpay order created:", res.data);
+    // console.log("✅ Razorpay order created:", res.data);
 
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -56,7 +56,7 @@ export default function CartPage({ onLoginTrigger }) {
       description: "Order Payment",
       order_id: res.data.id,
       handler: async function (response) {
-        console.log("📦 Razorpay response received:", response);
+        // console.log(" Razorpay response received:", response);
 
         try {
           const verifyRes = await api.post(
@@ -69,7 +69,7 @@ export default function CartPage({ onLoginTrigger }) {
             { headers: { Authorization: `Bearer ${token}` } }
           );
 
-          console.log("✅ Payment verified:", verifyRes.data);
+          // console.log(" Payment verified:", verifyRes.data);
 
           confetti({
             particleCount: 150,
@@ -82,7 +82,7 @@ export default function CartPage({ onLoginTrigger }) {
 
           setTimeout(() => navigate("/order-success"), 1500);
         } catch (err) {
-          console.error("❌ Payment verification failed:", err?.response?.data || err.message);
+          console.error(" Payment verification failed:", err?.response?.data || err.message);
           toast.error("Payment verification failed");
         }
       },
@@ -99,7 +99,7 @@ export default function CartPage({ onLoginTrigger }) {
     rzp.open();
 
   } catch (err) {
-    console.error("❌ Payment error:", err?.response?.data || err.message);
+    console.error(" Payment error:", err?.response?.data || err.message);
     toast.error("Payment failed");
   }
 };
