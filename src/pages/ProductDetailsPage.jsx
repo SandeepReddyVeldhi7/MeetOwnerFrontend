@@ -75,7 +75,7 @@ export default function ProductDetailsPage() {
           }}
         >
           <img
-            src={product.image}
+        src={product.images?.[0]}
             alt={product.title}
             style={{
               maxWidth: '100%',
