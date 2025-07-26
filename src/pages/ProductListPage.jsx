@@ -248,7 +248,7 @@ useEffect(() => {
                   }}
                 >
                   <img
-                    src={product.image}
+                      src={product.images?.[0]}
                     alt={product.title}
                     style={{ maxHeight: '160px', objectFit: 'contain' }}
                   />
