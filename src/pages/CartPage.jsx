@@ -42,11 +42,19 @@ export default function CartPage({ onLoginTrigger }) {
   quantity: i.quantity
 }));
 
-const res = await api.post(
-  "/payment/razorpay-order",
-  { amount: total * 100, cartItems: cleanedItems },
-  { headers: { Authorization: `Bearer ${token}` } }
-);
+try {
+  const res = await api.post(
+    "/payment/razorpay-order",
+    { amount: total * 100, cartItems: cleanedItems },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
+  console.log("✅ Razorpay order created on backend:", res.data);
+} catch (err) {
+  console.error("❌ Payment error:", err?.response?.data || err.message);
+  toast.error("Payment failed");
+}
+
 
 
       console.log("Razorpay order created:", res.data);
@@ -58,34 +66,50 @@ const res = await api.post(
         name: "MyShop",
         description: "Order Payment",
         order_id: res.data.id,
-       handler: async function (response) {
+ handler: async function (response) {
   let verifyRes;
-  try {
-    verifyRes = await api.post("/payment/verify-payment", {
-      razorpay_order_id: response.razorpay_order_id,
-      razorpay_payment_id: response.razorpay_payment_id,
-      razorpay_signature: response.razorpay_signature,
-    }, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  console.log("📦 Razorpay response received:", response);
 
-    console.log("✅ Backend verified:", verifyRes.data);
+  try {
+    verifyRes = await api.post(
+      "/payment/verify-payment",
+      {
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_signature: response.razorpay_signature,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    console.log("✅ Payment verification response from backend:");
+    console.dir(verifyRes.data, { depth: null });
+
   } catch (err) {
-    console.error("❌ Backend error:", err);
+    console.error("❌ Backend payment verification failed:", err?.response?.data || err.message);
     toast.error("Payment verification failed");
     return;
   }
 
   try {
-    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    // Confetti 🎉
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+
     dispatch(clearCart());
     toast.success("🎉 Order placed successfully!");
+
     setTimeout(() => navigate("/order-success"), 1500);
   } catch (err) {
-    console.error("❌ Frontend post-verification error:", err);
+    console.error("❌ Frontend post-verification error:", err.message);
     toast.error("Post-verification failed");
   }
 }
+
 ,
 
         prefill: {
