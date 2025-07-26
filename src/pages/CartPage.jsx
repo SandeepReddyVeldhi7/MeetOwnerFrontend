@@ -97,7 +97,7 @@ console.log("import.meta.env.VITE_RAZORPAY_KEY_ID,", import.meta.env.VITE_RAZORP
             {items.map((item) => (
               <div key={item.productId.id} style={{ display: 'flex', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1rem', backgroundColor: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', alignItems: 'center', gap: '1rem' }}>
                 <div style={{ width: '80px', height: '80px', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px', overflow: 'hidden' }}>
-                  <img src={item.productId.image} alt={item.productId.title} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                  <img  src={item.productId.images?.[0]} alt={item.productId.title} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                 </div>
 
                 <div style={{ flexGrow: 1 }}>
