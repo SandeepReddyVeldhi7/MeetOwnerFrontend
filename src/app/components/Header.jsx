@@ -3,7 +3,7 @@ import { logout } from '../../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { FaShoppingCart, FaHeart } from 'react-icons/fa';
 
-export default function Header({ onLoginClick }) {
+export default function Header() {
   const { user } = useSelector(state => state.auth);
   const { items } = useSelector(state => state.cart);
   const wishlistItems = useSelector(state => state.wishlist.items);

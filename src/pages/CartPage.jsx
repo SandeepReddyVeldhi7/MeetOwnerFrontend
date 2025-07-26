@@ -8,10 +8,10 @@ import {
 } from "../features/cart/cartSlice";
 import { toast } from "react-hot-toast";
 import api from "../services/api";
-import confetti from 'canvas-confetti';
+import confetti from "canvas-confetti";
 
 export default function CartPage({ onLoginTrigger }) {
-  console.log("onLoginTrigger", onLoginTrigger);
+  // console.log("onLoginTrigger", onLoginTrigger);
   const { user, token } = useSelector((state) => state.auth);
   const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
@@ -23,86 +23,88 @@ export default function CartPage({ onLoginTrigger }) {
   );
 
   const handleProceed = async () => {
-  if (!token) {
-    console.log("No token, triggering login modal.");
-    onLoginTrigger();
-    return;
-  }
+    if (!token) {
+      console.log("No token, triggering login modal.");
+      onLoginTrigger();
+      return;
+    }
 
-  console.log("Token found. Proceeding to payment...");
+    console.log("Token found. Proceeding to payment...");
 
-  try {
-    await dispatch(syncCartToBackend());
+    try {
+      await dispatch(syncCartToBackend());
 
-    const cleanedItems = items.map((i) => ({
-      productId: i.productId._id || i.productId.id || i.productId,
-      quantity: i.quantity,
-    }));
+      const cleanedItems = items.map((i) => ({
+        productId: i.productId._id || i.productId.id || i.productId,
+        quantity: i.quantity,
+      }));
 
-    const amountInPaise = Math.round(total * 100);
-    const res = await api.post(
-      "/payment/razorpay-order",
-      { amount: amountInPaise, cartItems: cleanedItems },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+      const amountInPaise = Math.round(total * 100);
+      const res = await api.post(
+        "/payment/razorpay-order",
+        { amount: amountInPaise, cartItems: cleanedItems },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    // console.log("✅ Razorpay order created:", res.data);
+      // console.log(" Razorpay order created:", res.data);
 
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-      amount: res.data.amount,
-      currency: "INR",
-      name: "MyShop",
-      description: "Order Payment",
-      order_id: res.data.id,
-      handler: async function (response) {
-        // console.log(" Razorpay response received:", response);
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: res.data.amount,
+        currency: "INR",
+        name: "MyShop",
+        description: "Order Payment",
+        order_id: res.data.id,
+        handler: async function (response) {
+          // console.log(" Razorpay response received:", response);
 
-        try {
-          const verifyRes = await api.post(
-            "/payment/verify-payment",
-            {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            },
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
+          try {
+            const verifyRes = await api.post(
+              "/payment/verify-payment",
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
 
-          // console.log(" Payment verified:", verifyRes.data);
+            // console.log(" Payment verified:", verifyRes.data);
 
-          confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 },
-          });
+            confetti({
+              particleCount: 150,
+              spread: 70,
+              origin: { y: 0.6 },
+            });
 
-          dispatch(clearCart());
-          toast.success("🎉 Order placed successfully!");
+            dispatch(clearCart());
+            toast.success("🎉 Order placed successfully!");
 
-          setTimeout(() => navigate("/order-success"), 1500);
-        } catch (err) {
-          console.error(" Payment verification failed:", err?.response?.data || err.message);
-          toast.error("Payment verification failed");
-        }
-      },
-      prefill: {
-        name: user?.name || "Guest",
-        email: user?.email,
-      },
-      theme: {
-        color: "#2563eb",
-      },
-    };
+            setTimeout(() => navigate("/order-success"), 1500);
+          } catch (err) {
+            console.error(
+              " Payment verification failed:",
+              err?.response?.data || err.message
+            );
+            toast.error("Payment verification failed");
+          }
+        },
+        prefill: {
+          name: user?.name || "Guest",
+          email: user?.email,
+        },
+        theme: {
+          color: "#2563eb",
+        },
+      };
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-
-  } catch (err) {
-    console.error(" Payment error:", err?.response?.data || err.message);
-    toast.error("Payment failed");
-  }
-};
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error(" Payment error:", err?.response?.data || err.message);
+      toast.error("Payment failed");
+    }
+  };
 
   const handleIncrease = (product) => {
     dispatch(addToCart({ productId: product, quantity: 1 }));
